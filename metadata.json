@@ -1,0 +1,5 @@
+{
+  "name": "AI Personal Finance Advisor",
+  "description": "A full-stack fintech web application that helps users track expenses, manage multiple loans, and plan investments with AI-driven insights.",
+  "requestFramePermissions": []
+}
