@@ -1,20 +1,21 @@
 import 'dotenv/config';
 import express from 'express';
-import { createServer as createViteServer } from 'vite';
+import cors from 'cors';
 import path from 'path';
 import mongoose from 'mongoose';
 import { GoogleGenAI } from '@google/genai';
-import protect from './server/middleware/auth.js';
-import authRoutes from './server/routes/authRoutes.js';
-import expenseRoutes from './server/routes/expenseRoutes.js';
-import loanRoutes from './server/routes/loanRoutes.js';
-import investmentRoutes from './server/routes/investmentRoutes.js';
-import dashboardRoutes from './server/routes/dashboardRoutes.js';
-import financeRoutes from './server/routes/financeRoutes.js';
+import protect from './middleware/auth.js';
+import authRoutes from './routes/authRoutes.js';
+import expenseRoutes from './routes/expenseRoutes.js';
+import loanRoutes from './routes/loanRoutes.js';
+import investmentRoutes from './routes/investmentRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import financeRoutes from './routes/financeRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -216,20 +217,6 @@ async function startServer() {
   if (!process.env.JWT_SECRET) {
     process.env.JWT_SECRET = 'dev-secret-change-in-production';
     console.warn('WARNING: Using default JWT_SECRET. Set JWT_SECRET env variable in production.');
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
   }
 
   app.listen(PORT, '0.0.0.0', () => {
